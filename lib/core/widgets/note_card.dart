@@ -29,22 +29,23 @@ class NoteCard extends StatelessWidget {
 
       child: Container(
 
-        margin: const EdgeInsets.only(bottom: 14),
-
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
 
         decoration: BoxDecoration(
 
           color: Colors.white,
 
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
 
-          boxShadow: const [
+          boxShadow: [
 
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 5,
-              offset: Offset(0, 2),
+
+              color: Colors.black.withOpacity(0.05),
+
+              blurRadius: 10,
+
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -53,6 +54,8 @@ class NoteCard extends StatelessWidget {
 
           crossAxisAlignment:
           CrossAxisAlignment.start,
+
+          mainAxisSize: MainAxisSize.min,
 
           children: [
 
@@ -69,59 +72,79 @@ class NoteCard extends StatelessWidget {
 
                     note.title,
 
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+
+                    overflow:
+                    TextOverflow.ellipsis,
+
+                    style: const TextStyle(
+
+                      fontSize: 20,
+
+                      fontWeight:
+                      FontWeight.bold,
+                    ),
                   ),
                 ),
 
-                IconButton(
+                GestureDetector(
 
-                  onPressed: onPin,
+                  onTap: onPin,
 
-                  icon: Icon(
+                  child: Icon(
 
                     note.isPinned
                         ? Icons.push_pin
                         : Icons.push_pin_outlined,
 
-                    color: Colors.orange,
+                    size: 20,
+
+                    color: Colors.black87,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
+
+            Container(
+
+              height: 1.2,
+
+              width: double.infinity,
+
+              color: Colors.grey.shade300,
+            ),
+
+            const SizedBox(height: 12),
 
             Text(
 
               note.content,
 
-              maxLines: 3,
+              maxLines: 6,
 
-              overflow: TextOverflow.ellipsis,
+              overflow:
+              TextOverflow.ellipsis,
 
               style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black87,
+                fontSize: 16,
+                height: 1.4,
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
             Align(
 
-              alignment: Alignment.centerRight,
+              alignment:
+              Alignment.bottomRight,
 
-              child: IconButton(
+              child: GestureDetector(
 
-                onPressed: onDelete,
+                onTap: onDelete,
 
-                icon: const Icon(
+                child: const Icon(
                   Icons.delete,
                   color: Colors.red,
                 ),

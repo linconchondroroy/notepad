@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/note_controller.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../../controllers/note_controller.dart';
 import '../../core/widgets/note_card.dart';
 
-import '../../modules/notes/add_note_screen.dart';
+import '../notes/add_note_screen.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -23,84 +24,229 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
 
+      backgroundColor: Colors.grey.shade100,
+
       appBar: AppBar(
 
-        title: const Text("My Notes"),
+        backgroundColor: Colors.grey.shade100,
 
-        centerTitle: true,
+        elevation: 0,
+
+        title: Container(
+
+          padding:
+          const EdgeInsets.symmetric(
+            horizontal: 12,
+          ),
+
+          decoration: BoxDecoration(
+
+            color: Colors.white,
+
+            borderRadius:
+            BorderRadius.circular(18),
+          ),
+
+          child: TextField(
+
+            controller: searchController,
+
+            decoration: const InputDecoration(
+
+              hintText: "Search Notes",
+
+              border: InputBorder.none,
+
+              icon: Icon(Icons.search),
+            ),
+
+            onChanged: (value) {
+
+              controller.loadNotes();
+            },
+          ),
+        ),
       ),
 
       floatingActionButton:
       FloatingActionButton(
+
+        backgroundColor: Colors.white,
+
+        elevation: 8,
 
         onPressed: () {
 
           Get.to(() => AddNoteScreen());
         },
 
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
       ),
 
       body: Padding(
 
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
 
-        child: Column(
+        child: Obx(() {
 
-          children: [
+          final allNotes =
+          searchController.text.isEmpty
 
-            TextField(
+              ? controller.notes
 
-              controller: searchController,
+              : controller.searchNotes(
+            searchController.text,
+          );
 
-              decoration: InputDecoration(
+          final pinnedNotes =
+          allNotes
+              .where(
+                (note) => note.isPinned,
+          )
+              .toList();
 
-                hintText: "Search Notes",
+          final otherNotes =
+          allNotes
+              .where(
+                (note) => !note.isPinned,
+          )
+              .toList();
 
-                prefixIcon:
-                const Icon(Icons.search),
+          return SingleChildScrollView(
 
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(14),
+            child: Column(
+
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+              children: [
+
+                if (pinnedNotes.isNotEmpty) ...[
+
+                  const Padding(
+
+                    padding:
+                    EdgeInsets.only(
+                      left: 6,
+                      bottom: 10,
+                    ),
+
+                    child: Text(
+
+                      "Pinned",
+
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                        FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  MasonryGridView.count(
+
+                    shrinkWrap: true,
+
+                    physics:
+                    const NeverScrollableScrollPhysics(),
+
+                    crossAxisCount: 2,
+
+                    mainAxisSpacing: 12,
+
+                    crossAxisSpacing: 12,
+
+                    itemCount:
+                    pinnedNotes.length,
+
+                    itemBuilder:
+                        (context, index) {
+
+                      final note =
+                      pinnedNotes[index];
+
+                      return NoteCard(
+
+                        note: note,
+
+                        onDelete: () {
+
+                          controller
+                              .deleteNote(
+                            controller.notes
+                                .indexOf(note),
+                          );
+                        },
+
+                        onPin: () {
+
+                          controller
+                              .togglePin(
+                            controller.notes
+                                .indexOf(note),
+                          );
+                        },
+
+                        onTap: () {
+
+                          Get.to(
+                                () => AddNoteScreen(
+                              note: note,
+                              index: controller
+                                  .notes
+                                  .indexOf(note),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
+
+                const Padding(
+
+                  padding: EdgeInsets.only(
+                    left: 6,
+                    bottom: 10,
+                  ),
+
+                  child: Text(
+
+                    "Others",
+
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight:
+                      FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
 
-              onChanged: (value) {
+                MasonryGridView.count(
 
-                controller.loadNotes();
-              },
-            ),
+                  shrinkWrap: true,
 
-            const SizedBox(height: 16),
+                  physics:
+                  const NeverScrollableScrollPhysics(),
 
-            Expanded(
+                  crossAxisCount: 2,
 
-              child: Obx(() {
+                  mainAxisSpacing: 12,
 
-                final notes =
-                searchController.text.isEmpty
+                  crossAxisSpacing: 12,
 
-                    ? controller.notes
+                  itemCount: otherNotes.length,
 
-                    : controller.searchNotes(
-                  searchController.text,
-                );
+                  itemBuilder:
+                      (context, index) {
 
-                if (notes.isEmpty) {
-
-                  return const Center(
-                    child: Text("No Notes Found"),
-                  );
-                }
-
-                return ListView.builder(
-
-                  itemCount: notes.length,
-
-                  itemBuilder: (context, index) {
-
-                    final note = notes[index];
+                    final note =
+                    otherNotes[index];
 
                     return NoteCard(
 
@@ -108,12 +254,20 @@ class HomeScreen extends StatelessWidget {
 
                       onDelete: () {
 
-                        controller.deleteNote(index);
+                        controller
+                            .deleteNote(
+                          controller.notes
+                              .indexOf(note),
+                        );
                       },
 
                       onPin: () {
 
-                        controller.togglePin(index);
+                        controller
+                            .togglePin(
+                          controller.notes
+                              .indexOf(note),
+                        );
                       },
 
                       onTap: () {
@@ -121,17 +275,19 @@ class HomeScreen extends StatelessWidget {
                         Get.to(
                               () => AddNoteScreen(
                             note: note,
-                            index: index,
+                            index: controller
+                                .notes
+                                .indexOf(note),
                           ),
                         );
                       },
                     );
                   },
-                );
-              }),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }

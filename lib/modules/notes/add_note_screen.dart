@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/note_controller.dart';
-
-import '../../core/widgets/custom_button.dart';
-import '../../core/widgets/custom_textfield.dart';
-
 import '../../data/models/note_model.dart';
 
 class AddNoteScreen extends StatelessWidget {
@@ -31,6 +27,35 @@ class AddNoteScreen extends StatelessWidget {
   contentController =
   TextEditingController();
 
+  void autoSave() {
+
+    final title = titleController.text.trim();
+
+    final content =
+    contentController.text.trim();
+
+    if (title.isEmpty &&
+        content.isEmpty) {
+      return;
+    }
+
+    if (note == null) {
+
+      controller.addNote(
+        title,
+        content,
+      );
+
+    } else {
+
+      controller.updateNote(
+        index!,
+        title,
+        content,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -41,69 +66,105 @@ class AddNoteScreen extends StatelessWidget {
       contentController.text = note!.content;
     }
 
-    return Scaffold(
+    return WillPopScope(
 
-      appBar: AppBar(
+      onWillPop: () async {
 
-        title: Text(
-          note == null
-              ? "Add Note"
-              : "Edit Note",
+        autoSave();
+
+        return true;
+      },
+
+      child: Scaffold(
+
+        backgroundColor: Colors.white,
+
+        appBar: AppBar(
+
+          backgroundColor: Colors.white,
+
+          elevation: 0,
+
+          leading: IconButton(
+
+            onPressed: () {
+
+              autoSave();
+
+              Get.back();
+            },
+
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
+          ),
         ),
-      ),
 
-      body: Padding(
+        body: Padding(
 
-        padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 10,
+          ),
 
-        child: Column(
+          child: Column(
 
-          children: [
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
 
-            CustomTextField(
+            children: [
 
-              controller: titleController,
+              TextField(
 
-              hintText: "Title",
-            ),
+                controller: titleController,
 
-            const SizedBox(height: 16),
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
 
-            CustomTextField(
+                decoration:
+                const InputDecoration(
 
-              controller: contentController,
+                  hintText: "Title",
 
-              hintText: "Content",
-            ),
+                  border: InputBorder.none,
+                ),
+              ),
 
-            const SizedBox(height: 20),
+              Expanded(
 
-            CustomButton(
+                child: TextField(
 
-              text: "Save",
+                  controller:
+                  contentController,
 
-              onPressed: () {
+                  maxLines: null,
 
-                if (note == null) {
+                  expands: true,
 
-                  controller.addNote(
-                    titleController.text,
-                    contentController.text,
-                  );
+                  keyboardType:
+                  TextInputType.multiline,
 
-                } else {
+                  textAlignVertical:
+                  TextAlignVertical.top,
 
-                  controller.updateNote(
-                    index!,
-                    titleController.text,
-                    contentController.text,
-                  );
-                }
+                  style: const TextStyle(
+                    fontSize: 18,
+                  ),
 
-                Get.back();
-              },
-            ),
-          ],
+                  decoration:
+                  const InputDecoration(
+
+                    hintText: "Note",
+
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

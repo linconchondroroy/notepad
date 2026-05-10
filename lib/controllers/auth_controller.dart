@@ -6,25 +6,30 @@ import '../modules/home/home_screen.dart';
 
 class AuthController extends GetxController {
 
-  final emailController = TextEditingController();
+  final emailController =
+  TextEditingController();
 
-  final passwordController = TextEditingController();
+  final passwordController =
+  TextEditingController();
 
   void login() {
 
-    String email = emailController.text.trim();
+    String email =
+    emailController.text.trim();
 
-    String password = passwordController.text.trim();
+    String password =
+    passwordController.text.trim();
 
     if (email == AuthService.adminEmail &&
-        password == AuthService.adminPassword) {
+        password ==
+            AuthService.adminPassword) {
 
       Get.snackbar(
         "Success",
         "Login Successful",
       );
 
-      Get.off(() => HomeScreen());
+      Get.offAll(() => HomeScreen());
 
     } else {
 
