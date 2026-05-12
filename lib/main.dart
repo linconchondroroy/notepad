@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'core/colors/app_colors.dart';
-
 import 'data/models/note_model.dart';
 
 import 'modules/auth/login_screen.dart';
